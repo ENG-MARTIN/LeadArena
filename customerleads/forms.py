@@ -82,12 +82,26 @@ class LeadForm(forms.ModelForm, ProfessionalFormMixin):
     class Meta:
         model = Lead
         fields = '__all__'
-        exclude = ['created_by', 'created_at', 'updated_at', 'notes']
+        exclude = ['created_by', 'created_at', 'updated_at']
+
+    location = forms.CharField(
+        label='Location',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address, Latitude, Longitude'}),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # Explicit dropdown assignments
+        if self.instance and self.instance.pk:
+            lat = self.instance.latitude or ''
+            lng = self.instance.longitude or ''
+            addr = self.instance.address or ''
+            if lat and lng:
+                self.fields['location'].initial = f"{addr} ({lat}, {lng})" if addr else f"{lat}, {lng}"
+            else:
+                self.fields['location'].initial = addr
+        
         self.fields['sex'].widget = forms.Select(choices=[
             ('', 'Select Gender'),
             ('male', 'Male'),
@@ -118,18 +132,38 @@ class LeadForm(forms.ModelForm, ProfessionalFormMixin):
             ('not_answered', 'Not Answered'),
         ])
         
-        # Apply bulk classes to text/select fields via the mixin
         self.apply_professional_styles()
 
     def save(self, commit=True):
         instance = super().save(commit=False)
+        location = self.cleaned_data.get('location', '')
+        
+        if location:
+            instance.address = location
+            import re
+            coord_match = re.search(r'\(([^)]+)\)', location)
+            if coord_match:
+                coords = coord_match.group(1).split(',')
+                if len(coords) == 2:
+                    try:
+                        instance.latitude = float(coords[0].strip())
+                        instance.longitude = float(coords[1].strip())
+                    except (ValueError, TypeError):
+                        pass
+            else:
+                parts = location.split(',')
+                if len(parts) == 2:
+                    try:
+                        instance.latitude = float(parts[0].strip())
+                        instance.longitude = float(parts[1].strip())
+                    except (ValueError, TypeError):
+                        pass
+        
         extra_info = []
         fields_to_capture = [
             ('quantity', 'Quantity'), ('total', 'Total'), 
-            ('russian_post_track', 'Russian Post Track'), ('delivery_time', 'Delivery Time'),
-            ('index', 'Index'), ('region', 'Region'), ('city', 'City'), 
-            ('district', 'District'), ('address', 'Address'), ('sex', 'Sex'), 
-            ('age', 'Age'), ('comment', 'Comment'), 
+            ('delivery_time', 'Delivery Time'),
+            ('sex', 'Sex'), ('age', 'Age'), ('comment', 'Comment'), 
             ('cancellation_reason', 'Cancellation Reason'), 
             ('return_reason', 'Return Reason'), ('spam_reason', 'Spam Reason'),
             ('additional_field_14', 'Additional Field #14'),

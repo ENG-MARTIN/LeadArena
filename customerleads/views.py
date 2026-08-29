@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-from .models import CallLog, Lead, Client, Interaction, Task, UserProfile, Deal
+from .models import CallLog, Lead, Client, Interaction, Task, UserProfile, Deal, Delivery
 from website.models import CallbackRequest
 from .forms import CustomUserCreationForm, LeadForm, ClientForm, InteractionForm, TaskForm, DealForm
 import africastalking
@@ -911,8 +911,8 @@ def operator_dashboard(request):
 
     leads_per_hour = round(total_leads / 8, 1) if period == 'today' else round(total_leads / 40, 1)
     buyout = "0%" if total_leads == 0 else f"{(qualified_count / total_leads) * 92:.1f}%"
-    bonuses = f"{qualified_count * 5.50:.2f} c.u."
-    average_check = f"${avg_check_val:,.2f}"
+    bonuses = f"{qualified_count * 5.50:.2f} UGX."
+    average_check = f"UGX{avg_check_val:,.2f}"
 
     pending_website_leads = Lead.objects.filter(status='pending', source='website').order_by('-created_at')[:50]
 
@@ -1351,3 +1351,153 @@ def update_lead_call_outcome(request, lead_id):
     
     messages.success(request, f'Call outcome updated for {lead.name}.')
     return redirect('staff_dashboard')
+
+
+@login_required
+def get_confirm_order_form(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    return render(request, 'dashboard/partials/confirm_order_form.html', {'lead': lead})
+
+
+@login_required
+@require_POST
+def confirm_website_order(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    
+    name = request.POST.get('name', '').strip()
+    email = request.POST.get('email', '').strip()
+    quantity = request.POST.get('quantity', '1')
+    address = request.POST.get('address', '').strip()
+    total = request.POST.get('total', '').strip()
+    delivery_time = request.POST.get('delivery_time', '').strip()
+    
+    if name:
+        lead.name = name
+    if email is not None:
+        lead.email = email
+    
+    try:
+        lead.quantity = int(quantity) if quantity else 1
+    except (ValueError, TypeError):
+        lead.quantity = 1
+    
+    lead.address = address
+    lead.delivery_time = delivery_time
+    
+    if total:
+        try:
+            from decimal import Decimal
+            lead.total = Decimal(total)
+        except Exception:
+            pass
+    
+    lead.call_outcome = 'success'
+    lead.call_outcome_notes = 'Confirmed via website'
+    lead.status = 'confirmed'
+    lead.save()
+    
+    if request.htmx:
+        return render(request, 'dashboard/partials/lead_row.html', {'lead': lead})
+    
+    messages.success(request, f'Order confirmed for {lead.name}.')
+    return redirect('staff_dashboard')
+
+
+# ================================================ DELIVERIES ============================================
+
+class DeliveryListView(LoginRequiredMixin, ListView):
+    model = Delivery
+    template_name = 'deliveries/delivery_list.html'
+    context_object_name = 'deliveries'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Delivery.objects.all().select_related('lead', 'delivery_person')
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['status_choices'] = Delivery.STATUS_CHOICES
+        context['users'] = User.objects.filter(is_active=True).order_by('first_name', 'last_name')
+        return context
+
+
+class DeliveryDetailView(LoginRequiredMixin, DetailView):
+    model = Delivery
+    template_name = 'deliveries/delivery_detail.html'
+    context_object_name = 'delivery'
+
+
+class DeliveryCreateView(LoginRequiredMixin, CreateView):
+    model = Delivery
+    template_name = 'deliveries/delivery_form.html'
+    fields = ['lead', 'scheduled_date', 'address', 'quantity', 'total', 'notes']
+    success_url = reverse_lazy('deliveries')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        lead_id = self.request.GET.get('lead_id')
+        if lead_id:
+            lead = get_object_or_404(Lead, id=lead_id)
+            initial['lead'] = lead
+            initial['address'] = lead.address or ''
+            initial['quantity'] = lead.quantity or 1
+            initial['total'] = lead.total or ''
+        return initial
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Delivery created successfully!')
+        return super().form_valid(form)
+
+
+class DeliveryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Delivery
+    template_name = 'deliveries/delivery_form.html'
+    fields = ['delivery_person', 'status', 'tracking_number', 'scheduled_date', 'delivered_at', 'address', 'quantity', 'total', 'notes']
+    success_url = reverse_lazy('deliveries')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Delivery updated successfully!')
+        return super().form_valid(form)
+
+
+@login_required
+def assign_delivery_person(request, delivery_id):
+    delivery = get_object_or_404(Delivery, id=delivery_id)
+    if request.method == 'POST':
+        person_id = request.POST.get('delivery_person')
+        if person_id:
+            delivery.delivery_person = User.objects.get(id=person_id)
+            if delivery.status == 'pending':
+                delivery.status = 'dispatched'
+            delivery.save()
+            if request.htmx:
+                return render(request, 'deliveries/partials/delivery_row.html', {'delivery': delivery})
+            messages.success(request, f'Delivery person assigned to {delivery.lead.name}.')
+        else:
+            delivery.delivery_person = None
+            delivery.save()
+            if request.htmx:
+                return render(request, 'deliveries/partials/delivery_row.html', {'delivery': delivery})
+            messages.success(request, 'Delivery person unassigned.')
+    return redirect('deliveries')
+
+
+@login_required
+def update_delivery_status(request, delivery_id):
+    delivery = get_object_or_404(Delivery, id=delivery_id)
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        if status in dict(Delivery.STATUS_CHOICES):
+            delivery.status = status
+            if status == 'delivered':
+                from django.utils import timezone
+                delivery.delivered_at = timezone.now()
+            delivery.save()
+            if request.htmx:
+                return render(request, 'deliveries/partials/delivery_row.html', {'delivery': delivery})
+            messages.success(request, f'Delivery status updated to {delivery.get_status_display()}.')
+    return redirect('deliveries')

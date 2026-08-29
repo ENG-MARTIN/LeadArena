@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Edit Delivery{% else %}New Delivery{% endif %} - CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{% if object %}Edit Delivery{% else %}Initiate Delivery{% endif %}</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please correct the errors below.
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Customer Lead</label>
+                            {{ form.lead }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Delivery Person</label>
+                            {{ form.delivery_person }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Tracking Number</label>
+                            {{ form.tracking_number }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Scheduled Date</label>
+                            {{ form.scheduled_date }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Delivered At</label>
+                            {{ form.delivered_at }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Quantity</label>
+                            {{ form.quantity }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Total (UGX)</label>
+                            {{ form.total }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            {{ form.address }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            {{ form.notes }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'deliveries' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        {% if object %}Update Delivery{% else %}Initiate Delivery{% endif %}
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -26,6 +26,8 @@ urlpatterns = [
     path('staff/convert-callback-to-lead/<int:cb_id>/', views.convert_callback_to_lead, name='convert_callback_to_lead'),
     path('staff/start-conversation/', views.start_conversation_view, name='start_conversation'),
     path('leads/<int:lead_id>/update-call-outcome/', views.update_lead_call_outcome, name='update_lead_call_outcome'),
+    path('leads/<int:lead_id>/confirm-order-form/', views.get_confirm_order_form, name='get_confirm_order_form'),
+    path('leads/<int:lead_id>/confirm-order/', views.confirm_website_order, name='confirm_website_order'),
     path('leads/<int:lead_id>/send-sms/', views.send_sms_view, name='send_sms'),
     path('leads/<int:lead_id>/send-email/', views.send_email_view, name='send_email'),
 
@@ -42,6 +44,14 @@ urlpatterns = [
     path('leads/<int:pk>/update/', views.LeadUpdateView.as_view(), name='lead_update'),
     path('leads/<int:pk>/delete/', views.LeadDeleteView.as_view(), name='lead_delete'),
     path('leads/<int:lead_id>/convert/', views.convert_lead_to_client, name='convert_lead_to_client'),
+
+    # Deliveries
+    path('deliveries/', views.DeliveryListView.as_view(), name='deliveries'),
+    path('deliveries/create/', views.DeliveryCreateView.as_view(), name='delivery_create'),
+    path('deliveries/<int:pk>/', views.DeliveryDetailView.as_view(), name='delivery_detail'),
+    path('deliveries/<int:pk>/update/', views.DeliveryUpdateView.as_view(), name='delivery_update'),
+    path('deliveries/<int:delivery_id>/assign/', views.assign_delivery_person, name='assign_delivery_person'),
+    path('deliveries/<int:delivery_id>/status/', views.update_delivery_status, name='update_delivery_status'),
 
     # Deal Management
     path('deals/create/', views.DealCreateView.as_view(), name='deal_create'),

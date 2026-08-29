@@ -21,103 +21,153 @@
                 </div>
                 {% endif %}
 
-                <div class="row">
+                <div class="row g-3">
 
-                    <!-- Left Column -->
+                    <!-- Basic Info -->
                     <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            {{ form.name }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Company</label>
+                            {{ form.company }}
+                        </div>
+                    </div>
 
+                    <!-- Status & Tracking -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Priority</label>
+                            {{ form.priority }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Source</label>
+                            {{ form.source }}
+                        </div>
+                    </div>
+
+                    <!-- Call Outcome -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Call Outcome</label>
+                            {{ form.call_outcome }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Call Outcome Notes</label>
+                            {{ form.call_outcome_notes }}
+                        </div>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
                             {{ form.quantity }}
                         </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Total</label>
                             {{ form.total }}
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Russian Post Track</label>
-                            {{ form.russian_post_track }}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Index</label>
-                            {{ form.index }}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Region</label>
-                            {{ form.region }}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">City</label>
-                            {{ form.city }}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">District</label>
-                            {{ form.district }}
-                        </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Delivery Time</label>
                             {{ form.delivery_time }}
                         </div>
-
                     </div>
 
-                    <!-- Right Column -->
-                    <div class="col-md-6">
+                    <!-- Location -->
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            {{ form.location }}
+                        </div>
+                    </div>
 
+                    <!-- Customer Info -->
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Gender</label>
                             {{ form.sex }}
                         </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Age</label>
                             {{ form.age }}
                         </div>
+                    </div>
 
+                    <!-- Reasons -->
+                    <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label">Cancellation Reason</label>
                             {{ form.cancellation_reason }}
                         </div>
-
+                    </div>
+                    <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label">Return Reason</label>
                             {{ form.return_reason }}
                         </div>
-
+                    </div>
+                    <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label">Spam Reason</label>
                             {{ form.spam_reason }}
                         </div>
+                    </div>
 
+                    <!-- Notes & Extra -->
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Comment</label>
+                            {{ form.comment }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            {{ form.notes }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Additional Field #14</label>
+                            {{ form.additional_field_14 }}
+                        </div>
                     </div>
 
                 </div>
 
-                <hr>
-
-                <div class="mb-3">
-                    <label class="form-label">Address</label>
-                    {{ form.address }}
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Comment</label>
-                    {{ form.comment }}
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Additional Field #14</label>
-                    {{ form.additional_field_14 }}
-                </div>
-
-                <div class="d-flex justify-content-end gap-2">
+                <div class="d-flex justify-content-end gap-2 mt-4">
                     <a href="{% url 'leads' %}" class="btn btn-secondary">
                         Cancel
                     </a>

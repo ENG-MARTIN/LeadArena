@@ -243,7 +243,7 @@
 </section>
 
 <!-- Featured Products Section -->
-<section class="py-5 bg-white">
+{% comment %} <section class="py-5 bg-white">
     <div class="container py-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
             <div>
@@ -301,7 +301,7 @@
                             <div class="d-flex justify-content-between align-items-center pt-3 border-top">
                                 <div>
                                     <span class="text-muted small d-block">Retail Price</span>
-                                    <span class="fw-bold text-success fs-5">${{ product.price }}</span>
+                                    <span class="fw-bold text-success fs-5">UGX{{ product.price }}</span>
                                 </div>
                                 <a href="{% url 'website:product_detail' slug=product.slug %}"
                                     class="btn btn-sm btn-brand-primary rounded-pill px-3 py-2 fw-semibold">
@@ -319,7 +319,7 @@
             {% endfor %}
         </div>
     </div>
-</section>
+</section> {% endcomment %}
 
 <!-- Order Form Section -->
 <section id="order-section" class="py-5 position-relative"
@@ -387,48 +387,22 @@
                                             <span class="input-group-text bg-light border-end-0"><i
                                                     class="fas fa-phone text-muted"></i></span>
                                             <input type="tel" class="form-control bg-light border-start-0" id="id_phone"
-                                                name="phone" required placeholder="+256 700 000000">
+                                                name="phone" required placeholder="0705653345 / 0775264888">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
-                                        <label for="id_email" class="form-label fw-semibold small">Email Address</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0"><i
-                                                    class="fas fa-envelope text-muted"></i></span>
-                                            <input type="email" class="form-control bg-light border-start-0"
-                                                id="id_email" name="email" placeholder="email@example.com">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label for="id_product" class="form-label fw-semibold small">Select
-                                            Supplement</label>
+                                    <div class="col-12">
+                                        <label for="id_product" class="form-label fw-semibold small">Select Supplement</label>
                                         <select class="form-select bg-light" id="id_product" name="product">
                                             <option value="">Choose a product</option>
                                             {% for product in products %}
-                                            <option value="{{ product.id }}">{{ product.title }} (${{ product.price }})
+                                            <option value="{{ product.id }}">{{ product.title }} (UGX{{ product.price }})
                                             </option>
                                             {% endfor %}
                                         </select>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <label for="id_quantity" class="form-label fw-semibold small">Quantity</label>
-                                        <input type="number" class="form-control bg-light" id="id_quantity"
-                                            name="quantity" value="1" min="1" required>
-                                    </div>
-
-                                    <div class="col-md-8">
-                                        <label for="id_notes" class="form-label fw-semibold small">Delivery Address /
-                                            Special Notes</label>
-                                        <input type="text" class="form-control bg-light" id="id_notes" name="notes"
-                                            placeholder="City, District, Landmark instructions">
-                                    </div>
-
                                     <div class="col-12 mt-4">
-                                        <input type="hidden" id="id_latitude" name="latitude">
-                                        <input type="hidden" id="id_longitude" name="longitude">
                                         <button type="submit"
                                             class="btn btn-brand-primary btn-lg w-100 rounded-pill fw-bold py-3"
                                             id="submit-order-btn">
@@ -614,64 +588,40 @@
         const submitBtn = document.getElementById('submit-order-btn');
         const btnText = document.getElementById('order-btn-text');
         const btnLoader = document.getElementById('order-btn-loader');
-        const latInput = document.getElementById('id_latitude');
-        const lngInput = document.getElementById('id_longitude');
-
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        latInput.value = position.coords.latitude;
-                        lngInput.value = position.coords.longitude;
-                    },
-                    function (error) {
-                        console.warn('Geolocation notice:', error.message);
-                    }
-                );
-            }
-        }
-
-        getLocation();
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            feedback.innerHTML = '<div class="alert alert-info py-2 rounded-3">Acquiring order coordinates and submitting...</div>';
+            feedback.innerHTML = '<div class="alert alert-info py-2 rounded-3">Submitting your request...</div>';
             submitBtn.disabled = true;
             btnText.textContent = 'Submitting Request...';
             btnLoader.classList.remove('d-none');
 
-            getLocation();
-
-            setTimeout(function () {
-                const formData = new FormData(form);
-                fetch("{% url 'website:website_order_submit' %}", {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
-                    },
+            const formData = new FormData(form);
+            fetch("{% url 'website:website_order_submit' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        feedback.innerHTML = '<div class="alert alert-success py-3 rounded-3"><i class="fas fa-check-circle me-2"></i>' + data.message + '</div>';
+                        form.reset();
+                    } else {
+                        feedback.innerHTML = '<div class="alert alert-danger py-3 rounded-3"><i class="fas fa-exclamation-triangle me-2"></i>' + (data.error || 'Something went wrong. Please try again.') + '</div>';
+                    }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            feedback.innerHTML = '<div class="alert alert-success py-3 rounded-3"><i class="fas fa-check-circle me-2"></i>' + data.message + '</div>';
-                            form.reset();
-                            latInput.value = '';
-                            lngInput.value = '';
-                        } else {
-                            feedback.innerHTML = '<div class="alert alert-danger py-3 rounded-3"><i class="fas fa-exclamation-triangle me-2"></i>' + (data.error || 'Something went wrong. Please try again.') + '</div>';
-                        }
-                    })
-                    .catch(error => {
-                        feedback.innerHTML = '<div class="alert alert-danger py-3 rounded-3">Network error. Please try again.</div>';
-                    })
-                    .finally(function () {
-                        submitBtn.disabled = false;
-                        btnText.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Order Request';
-                        btnLoader.classList.add('d-none');
-                    });
-            }, 400);
+                .catch(error => {
+                    feedback.innerHTML = '<div class="alert alert-danger py-3 rounded-3">Network error. Please try again.</div>';
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                    btnText.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Order Request';
+                    btnLoader.classList.add('d-none');
+                });
         });
     });
 </script>

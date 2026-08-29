@@ -186,12 +186,12 @@
     </div>
     <div class="metric-card">
         <div class="metric-title">Average check</div>
-        <div class="metric-value">{{ average_check|default:"$0.00" }}</div>
-        <div class="metric-sub">Total: {{ average_check|default:"$0.00" }}</div>
+        <div class="metric-value">{{ average_check|default:"UGX0.00" }}</div>
+        <div class="metric-sub">Total: {{ average_check|default:"UGX0.00" }}</div>
     </div>
     <div class="metric-card bonus-card">
         <div class="metric-title">Bonuses</div>
-        <div class="metric-value">{{ bonuses|default:"0.00 c.u." }}</div>
+        <div class="metric-value">{{ bonuses|default:"0.00 UGX." }}</div>
         <div style="margin-top: 0.8rem;">
             <a href="#" style="color: var(--text-main); font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--text-main); padding-bottom: 2px; font-size: 0.85rem;">More →</a>
         </div>
@@ -212,12 +212,10 @@
         <table class="custom-dashboard-table">
             <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>Order ID</th>
                     <th>Phone</th>
-                    <th>Email</th>
                     <th>Product</th>
                     <th>Qty</th>
-                    <th>Location</th>
                     <th>Added</th>
                     <th>Call Outcome</th>
                 </tr>
@@ -225,35 +223,13 @@
             <tbody>
                 {% for lead in pending_website_leads %}
                 <tr id="pending-lead-row-{{ lead.id }}">
-                    <td><strong>{{ lead.name }}</strong></td>
+                    <td><strong>{{ lead.order_id }}</strong></td>
                     <td style="font-family: monospace; font-weight: 600; color: #1e293b;">{{ lead.phone }}</td>
-                    <td style="color: var(--text-muted);">{{ lead.email|default:"—" }}</td>
                     <td style="color: var(--text-muted);">{{ lead.company|default:"—" }}</td>
                     <td>{{ lead.quantity|default:"—" }}</td>
-                    <td>
-                        {% if lead.latitude and lead.longitude %}
-                        <a href="https://www.google.com/maps?q={{ lead.latitude }},{{ lead.longitude }}" target="_blank" style="color: var(--primary-blue); text-decoration: none; font-size: 0.85rem;">
-                            <i class="fas fa-map-marker-alt"></i> View
-                        </a>
-                        {% else %}
-                        <span style="color: var(--text-muted);">—</span>
-                        {% endif %}
-                    </td>
                     <td style="color: var(--text-muted); font-size: 0.85rem;">{{ lead.created_at|naturaltime }}</td>
                     <td>
                         <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; align-items: center;">
-                            <form 
-                                hx-post="{% url 'update_lead_call_outcome' lead_id=lead.id %}" 
-                                hx-target="#pending-lead-row-{{ lead.id }}" 
-                                hx-swap="outerHTML"
-                            >
-                                {% csrf_token %}
-                                <input type="hidden" name="call_outcome" value="success">
-                                <input type="hidden" name="call_outcome_notes" value="">
-                                <button type="submit" class="btn btn-sm btn-success" title="Confirmed">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            </form>
                             <form 
                                 hx-post="{% url 'update_lead_call_outcome' lead_id=lead.id %}" 
                                 hx-target="#pending-lead-row-{{ lead.id }}" 
@@ -266,6 +242,12 @@
                                     <i class="fas fa-phone-slash"></i>
                                 </button>
                             </form>
+                            <button type="button" class="btn btn-sm btn-success" title="Confirmed"
+                                hx-get="{% url 'get_confirm_order_form' lead_id=lead.id %}"
+                                hx-target="#pending-lead-row-{{ lead.id }}"
+                                hx-swap="outerHTML">
+                                <i class="fas fa-check"></i>
+                            </button>
                             <form 
                                 hx-post="{% url 'update_lead_call_outcome' lead_id=lead.id %}" 
                                 hx-target="#pending-lead-row-{{ lead.id }}" 
@@ -295,7 +277,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" style="text-align: center; padding: 2rem 1.5rem; color: var(--text-muted);">
+                    <td colspan="6" style="text-align: center; padding: 2rem 1.5rem; color: var(--text-muted);">
                         <span style="font-weight: 500; display: block; color: var(--text-main);">No pending website leads.</span>
                     </td>
                 </tr>

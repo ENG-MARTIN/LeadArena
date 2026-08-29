@@ -38,7 +38,7 @@
                     </div>
                     <hr class="my-3">
                     <div class="text-start">
-                        <p class="mb-2"><strong><i class="fas fa-dollar-sign me-2 text-success"></i>Value:</strong> ${{ deal.value|floatformat:0|intcomma }}</p>
+                        <p class="mb-2"><strong><i class="fas fa-dollar-sign me-2 text-success"></i>Value:</strong> UGX{{ deal.value|floatformat:0|intcomma }}</p>
                         <p class="mb-2"><strong><i class="fas fa-percentage me-2 text-warning"></i>Probability:</strong> {{ deal.probability }}%</p>
                         <p class="mb-2"><strong><i class="fas fa-calendar me-2 text-primary"></i>Expected Close:</strong> {{ deal.expected_close_date|date:"M d, Y"|default:"Not set" }}</p>
                         <p class="mb-0"><strong><i class="fas fa-user-tie me-2 text-danger"></i>Owner:</strong> {{ deal.owner.get_full_name|default:"Unassigned" }}</p>

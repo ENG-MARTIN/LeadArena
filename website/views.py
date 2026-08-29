@@ -125,12 +125,7 @@ def website_order_submit(request):
         
         name = request.POST.get('name', '').strip()
         phone = request.POST.get('phone', '').strip()
-        email = request.POST.get('email', '').strip()
         product_id = request.POST.get('product')
-        quantity = request.POST.get('quantity', '1')
-        notes = request.POST.get('notes', '').strip()
-        latitude = request.POST.get('latitude')
-        longitude = request.POST.get('longitude')
         
         if not name or not phone:
             return JsonResponse({'success': False, 'error': 'Name and phone are required.'})
@@ -138,7 +133,7 @@ def website_order_submit(request):
         lead = Lead(
             name=name,
             phone=phone,
-            email=email,
+            email='',
             status='pending',
             priority='medium',
             source='website',
@@ -151,25 +146,6 @@ def website_order_submit(request):
                 product = Product.objects.get(id=product_id)
                 lead.company = product.title
             except Product.DoesNotExist:
-                pass
-        
-        try:
-            lead.quantity = int(quantity) if quantity else 1
-        except (ValueError, TypeError):
-            lead.quantity = 1
-        
-        lead.notes = notes
-        
-        if latitude:
-            try:
-                lead.latitude = float(latitude)
-            except (ValueError, TypeError):
-                pass
-        
-        if longitude:
-            try:
-                lead.longitude = float(longitude)
-            except (ValueError, TypeError):
                 pass
         
         lead.save()

@@ -39,7 +39,7 @@
         <div class="col-6 col-md-3">
             <div class="stat-card stat-card.warning dashboard-card p-4 h-100">
                 <h6 class="stat-label">High Value</h6>
-                <div class="stat-number">${{ high_value_clients|floatformat:0|intcomma }}</div>
+                <div class="stat-number">UGX{{ high_value_clients|floatformat:0|intcomma }}</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
@@ -140,7 +140,7 @@
                             </td>
                             <td>
                                 {% if client.total_value %}
-                                    <strong>${{ client.total_value|floatformat:0|intcomma }}</strong>
+                                    <strong>UGX{{ client.total_value|floatformat:0|intcomma }}</strong>
                                 {% else %}
                                     —
                                 {% endif %}

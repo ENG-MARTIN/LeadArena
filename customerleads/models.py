@@ -98,14 +98,7 @@ class Lead(models.Model):
     # === Order / Delivery Fields ===
     quantity = models.PositiveIntegerField(null=True, blank=True)
     total = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-
-    russian_post_track = models.CharField(max_length=100, blank=True)
-    index = models.CharField(max_length=20, blank=True, verbose_name="Postal Index")
-    region = models.CharField(max_length=100, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    district = models.CharField(max_length=100, blank=True)
     address = models.TextField(blank=True)
-
     delivery_time = models.CharField(max_length=100, blank=True)
 
     # Customer Info
@@ -155,6 +148,10 @@ class Lead(models.Model):
             'failed': 'danger',
             'not_answered': 'secondary',
         }.get(self.status, 'secondary')
+
+    @property
+    def order_id(self):
+        return f"Lead-{self.id:04d}"
 
 class Deal(models.Model):
     STAGE_CHOICES = [
@@ -289,3 +286,43 @@ class CallLog(models.Model):
     duration = models.IntegerField(default=0)
     recording_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Delivery(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('dispatched', 'Dispatched'),
+        ('in_transit', 'In Transit'),
+        ('delivered', 'Delivered'),
+        ('failed', 'Failed'),
+        ('returned', 'Returned'),
+    ]
+
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='deliveries')
+    delivery_person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='deliveries')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    tracking_number = models.CharField(max_length=100, blank=True)
+    scheduled_date = models.DateField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    address = models.TextField(blank=True)
+    quantity = models.PositiveIntegerField(null=True, blank=True)
+    total = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Delivery #{self.id} - {self.lead.name}"
+
+    def get_status_color(self):
+        return {
+            'pending': 'warning',
+            'dispatched': 'info',
+            'in_transit': 'primary',
+            'delivered': 'success',
+            'failed': 'danger',
+            'returned': 'secondary',
+        }.get(self.status, 'secondary')
