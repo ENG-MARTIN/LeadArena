@@ -156,6 +156,9 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -165,3 +168,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AFRICASTALKING_USERNAME = 'leadarena'
 AFRICASTALKING_API_KEY = 'atsk_eb1cf9d84b3f1e410d6ffb2d2f6d6881f02faeb322a186c83e8cc9e0f633416157cdd933'
 AFRICASTALKING_VIRTUAL_NUMBER = '+256323200925' # Your AT sandbox number
+

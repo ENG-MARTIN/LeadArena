@@ -1,299 +1,469 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Dashboard - JoelZone CRM{% endblock %}
+{% block title %}Executive Admin Dashboard - AURESAN CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="row fade-in">
-    <div class="col-12">
-        <h1 class="section-title">Lead Management Dashboard</h1>
-        <p class="text-muted">Overview of your sales pipeline and lead performance</p>
-    </div>
-</div>
+<div class="admin-dashboard fade-in">
 
-<div class="row mb-4">
-    <!-- Lead Statistics Cards -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card h-100 slide-in-left">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="stat-number">{{ total_leads }}</h2>
-                        <p class="stat-label">TOTAL LEADS</p>
-                        <small class="text-white opacity-75">All time</small>
+
+    <!-- Primary Executive KPI Cards Row -->
+    <div class="row g-4 mb-4">
+        <!-- Card 1: Total Leads -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card-enhanced">
+                <div class="stat-header">
+                    <div class="stat-icon-glow indigo">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <i class="fas fa-users fa-2x opacity-50"></i>
+                    <span class="stat-trend-pill positive">
+                        <i class="fas fa-arrow-up"></i> Active Database
+                    </span>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_leads }}</div>
+                    <div class="stat-label">Total Leads</div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-fill bg-indigo" style="width: 85%; background: #6366f1;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Pipeline Value -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card-enhanced">
+                <div class="stat-header">
+                    <div class="stat-icon-glow emerald">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <span class="stat-trend-pill positive">
+                        <i class="fas fa-chart-line"></i> Pipeline Value
+                    </span>
+                </div>
+                <div>
+                    <div class="stat-value" style="font-size: 1.85rem;">UGX {{ total_pipeline_value|floatformat:2 }}</div>
+                    <div class="stat-label">Active Deal Volume</div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-fill bg-emerald" style="width: 72%; background: #10b981;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Converted Clients -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card-enhanced">
+                <div class="stat-header">
+                    <div class="stat-icon-glow amber">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <span class="stat-trend-pill positive">
+                        <i class="fas fa-percentage"></i> {{ conversion_rate }}% Rate
+                    </span>
+                </div>
+                <div>
+                    <div class="stat-value">{{ converted_leads }}</div>
+                    <div class="stat-label">Converted Clients</div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-fill bg-amber"
+                        style="width: {{ conversion_rate }}%; background: #f59e0b;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Hot Leads -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card-enhanced">
+                <div class="stat-header">
+                    <div class="stat-icon-glow rose">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <span class="stat-trend-pill negative">
+                        <i class="fas fa-exclamation-triangle"></i> High Priority
+                    </span>
+                </div>
+                <div>
+                    <div class="stat-value">{{ hot_leads }}</div>
+                    <div class="stat-label">Hot Priority Leads</div>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-progress-fill bg-rose" style="width: 78%; background: #ef4444;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card warning h-100 slide-in-left" style="animation-delay: 0.1s;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="stat-number">{{ new_leads }}</h2>
-                        <p class="stat-label">NEW LEADS</p>
-                        <small class="text-white opacity-75">Require follow-up</small>
+    <!-- Analytics Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Lead Acquisition & Conversion Line Chart -->
+        <div class="col-xl-8">
+            <div class="section-card h-100 mb-0">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-area text-emerald"></i> Lead Acquisition & Conversion Trends</h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5" style="font-size: 0.725rem;">
+                            <i class="fas fa-circle text-primary me-1" style="font-size: 0.5rem;"></i> Total Acquisition
+                        </span>
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5" style="font-size: 0.725rem;">
+                            <i class="fas fa-circle text-emerald me-1" style="font-size: 0.5rem;"></i> Converted Clients
+                        </span>
                     </div>
-                    <i class="fas fa-bell fa-2x opacity-50"></i>
+                </div>
+                <div class="card-body">
+                    <div class="chart-wrapper">
+                        <canvas id="leadsTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Pipeline Doughnut Chart -->
+        <div class="col-xl-4">
+            <div class="section-card h-100 mb-0">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie text-emerald"></i> Pipeline Distribution</h5>
+                    <a href="{% url 'sales_pipeline' %}" class="btn btn-sm btn-outline-secondary rounded-pill"
+                        style="font-size: 0.75rem;">Pipeline Board</a>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="chart-wrapper" style="height: 230px;">
+                        <canvas id="pipelineStatusChart"></canvas>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <small class="text-muted fw-semibold">Distribution across active lead status stages</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card success h-100 slide-in-left" style="animation-delay: 0.2s;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="stat-number">{{ converted_leads }}</h2>
-                        <p class="stat-label">CONVERTED LEADS</p>
-                        <small class="text-white opacity-75">Became clients</small>
+    <!-- Recent Leads Table & Lead Acquisition Channels -->
+    <div class="row g-4 mb-4">
+        <!-- Recent Leads Table -->
+        <div class="col-xl-7">
+            <div class="section-card h-100 mb-0">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-clock text-emerald"></i> Recent Leads</h5>
+                    <a href="{% url 'leads' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                        style="font-size: 0.775rem;">View All Leads</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="data-table-modern">
+                            <thead>
+                                <tr>
+                                    <th>Lead Name</th>
+                                    <th>Company</th>
+                                    <th>Status</th>
+                                    <th>Value</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lead in recent_leads %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2.5">
+                                            <div class="avatar-circle">
+                                                {{ lead.name|slice:":1"|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark lh-sm">{{ lead.name }}</div>
+                                                <small class="text-muted" style="font-size: 0.75rem;">{{
+                                                    lead.phone|default:lead.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold text-secondary" style="font-size: 0.85rem;">{{
+                                            lead.company|default:"—" }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge-dot {{ lead.status|default:'new' }}">
+                                            <span class="dot"></span>
+                                            {{ lead.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">UGX {{
+                                            lead.total|default:"0.00" }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'lead_detail' lead.pk %}"
+                                            class="btn btn-sm btn-light border rounded-circle" title="View Lead"
+                                            style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-chevron-right text-muted" style="font-size: 0.75rem;"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-5">
+                                        <i class="fas fa-folder-open fa-2x mb-2 text-slate opacity-50"></i>
+                                        <p class="mb-0">No recent leads found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <i class="fas fa-trophy fa-2x opacity-50"></i>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card danger h-100 slide-in-left" style="animation-delay: 0.3s;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="stat-number">{{ hot_leads }}</h2>
-                        <p class="stat-label">HOT LEADS</p>
-                        <small class="text-white opacity-75">High priority</small>
-                    </div>
-                    <i class="fas fa-fire fa-2x opacity-50"></i>
+        <!-- Lead Acquisition Channels -->
+        <div class="col-xl-5">
+            <div class="section-card h-100 mb-0">
+                <div class="card-header">
+                    <h5><i class="fas fa-project-diagram text-emerald"></i> Acquisition Channels</h5>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <!-- Pipeline Overview -->
-    <div class="col-xl-6 mb-4">
-        <div class="card stat-card info h-100 fade-in">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title text-white mb-0">Pipeline Overview</h5>
-                    <i class="fas fa-funnel-dollar fa-2x opacity-50"></i>
-                </div>
-                <div class="pipeline-stats">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-white">New</span>
-                        <span class="text-white font-weight-bold">{{ new_leads }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-white">Contacted</span>
-                        <span class="text-white font-weight-bold">{{ status_counts.contacted|default:0 }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-white">Qualified</span>
-                        <span class="text-white font-weight-bold">{{ status_counts.qualified|default:0 }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-white">Proposal Sent</span>
-                        <span class="text-white font-weight-bold">{{ status_counts.proposal|default:0 }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Recent Leads Activity -->
-    <div class="col-xl-6 mb-4">
-        <div class="card dashboard-card h-100 fade-in">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title text-gradient mb-0">Recent Leads</h5>
-                    <a href="{% url 'leads' %}" class="btn btn-sm btn-outline-primary">View All</a>
-                </div>
-                <div class="list-group list-group-flush">
-                    {% for lead in recent_leads %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="fw-bold">{{ lead.name }}</span>
-                            <br>
-                            <small class="text-muted">{{ lead.company|default:"No company" }}</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-{{ lead.get_status_color }}">{{ lead.get_status_display }}</span>
-                            <br>
-                            <small class="text-muted">{{ lead.created_at|timesince }} ago</small>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="list-group-item text-center text-muted">
-                        No recent leads
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <!-- Upcoming Tasks -->
-    <div class="col-xl-6 mb-4">
-        <div class="card dashboard-card h-100 fade-in">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title text-gradient mb-0">Upcoming Tasks</h5>
-                    <a href="{% url 'tasks' %}" class="btn btn-sm btn-outline-primary">View All</a>
-                </div>
-                <div class="list-group list-group-flush">
-                    {% for task in recent_tasks %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="fw-bold">{{ task.title }}</span>
-                            <br>
-                            <small class="text-muted">Due: {{ task.due_date|date:"M d, Y" }}</small>
-                        </div>
-                        <span class="badge bg-{{ task.get_priority_color }}">{{ task.get_priority_display }}</span>
-                    </div>
-                    {% empty %}
-                    <div class="list-group-item text-center text-muted">
-                        No upcoming tasks
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lead Sources -->
-    <div class="col-xl-6 mb-4">
-        <div class="card dashboard-card h-100 fade-in">
-            <div class="card-body">
-                <h5 class="card-title text-gradient mb-3">Lead Sources</h5>
-                <div class="list-group list-group-flush">
+                <div class="card-body">
                     {% for source in leads_by_source %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <span class="text-capitalize">{{ source.source|default:"Unknown" }}</span>
-                        <span class="badge bg-primary rounded-pill">{{ source.count }}</span>
+                    <div class="source-row">
+                        <div style="min-width: 130px;">
+                            <div class="fw-semibold text-dark text-capitalize" style="font-size: 0.85rem;">{{
+                                source.source|default:"Direct / Website" }}</div>
+                            <small class="text-muted" style="font-size: 0.725rem;">{{ source.count }} leads ({{
+                                source.percentage }}%)</small>
+                        </div>
+                        <div class="source-bar-bg">
+                            <div class="source-bar-fill" style="width: {{ source.percentage }}%;"></div>
+                        </div>
                     </div>
                     {% empty %}
-                    <div class="list-group-item text-center text-muted">
-                        No lead source data
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-bullseye fa-2x mb-2 text-slate opacity-50"></i>
+                        <p class="mb-0">No channel source metrics</p>
                     </div>
                     {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Performance Metrics -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card dashboard-card fade-in">
-            <div class="card-body">
-                <h5 class="card-title text-gradient">Sales Performance</h5>
-                <div class="row text-center">
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <h3 class="text-primary">{{ conversion_rate|floatformat:1 }}%</h3>
-                            <p class="text-muted">Conversion Rate</p>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up"></i>
-                                Leads to clients
-                            </small>
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-dark" style="font-size: 0.85rem;">Conversion Target
+                                Progress</span>
+                            <span class="fw-bold text-emerald" style="font-size: 0.85rem;">{{ conversion_rate }}%</span>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <h3 class="text-success">
-                                {% with response_time=24 %}
-                                    {{ response_time }}h
-                                {% endwith %}
-                            </h3>
-                            <p class="text-muted">Avg Response Time</p>
-                            <small class="text-info">First contact</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <h3 class="text-warning">
-                                {% with follow_ups=3.2 %}
-                                    {{ follow_ups }}
-                                {% endwith %}
-                            </h3>
-                            <p class="text-muted">Avg Follow-ups</p>
-                            <small class="text-warning">Per lead</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <h3 class="text-danger">
-                                {{ status_counts.lost|default:0 }}
-                            </h3>
-                            <p class="text-muted">Lost Leads</p>
-                            <small class="text-danger">This month</small>
+                        <div class="progress" style="height: 8px; border-radius: 4px; background: #f1f5f9;">
+                            <div class="progress-bar bg-emerald" role="progressbar"
+                                style="width: {{ conversion_rate }}%; background: linear-gradient(90deg, #10b981, #059669);"
+                                aria-valuenow="{{ conversion_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Quick Actions -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card dashboard-card fade-in">
-            <div class="card-body">
-                <h5 class="card-title text-gradient mb-4">Quick Actions</h5>
-                <div class="row text-center">
-                    <div class="col-md-2 col-6 mb-3">
-                        <a href="{% url 'lead_create' %}" class="btn btn-primary btn-lg p-3 w-100">
-                            <i class="fas fa-plus fa-2x mb-2"></i>
-                            <br>
-                            <small>Add Lead</small>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-3">
-                        <a href="{% url 'task_create' %}" class="btn btn-success btn-lg p-3 w-100">
-                            <i class="fas fa-tasks fa-2x mb-2"></i>
-                            <br>
-                            <small>Create Task</small>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-3">
-                        <a href="{% url 'interaction_create' %}" class="btn btn-info btn-lg p-3 w-100">
-                            <i class="fas fa-phone fa-2x mb-2"></i>
-                            <br>
-                            <small>Log Call</small>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-3">
-                        <a href="{% url 'sales_pipeline' %}" class="btn btn-warning btn-lg p-3 w-100">
-                            <i class="fas fa-chart-line fa-2x mb-2"></i>
-                            <br>
-                            <small>Pipeline</small>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-3">
-                        <a href="{% url 'analytics' %}" class="btn btn-danger btn-lg p-3 w-100">
-                            <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                            <br>
-                            <small>Analytics</small>
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-3">
-                        <a href="{% url 'reports' %}" class="btn btn-dark btn-lg p-3 w-100">
-                            <i class="fas fa-file-alt fa-2x mb-2"></i>
-                            <br>
-                            <small>Reports</small>
-                        </a>
+    <!-- Quick Actions Strip -->
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="section-card mb-0">
+                <div class="card-header">
+                    <h5><i class="fas fa-bolt text-emerald"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-2">
+                            <a href="{% url 'lead_create' %}" class="quick-action-card">
+                                <div class="action-icon-box" style="background: #ecfdf5; color: #059669;">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <span class="action-title">Add Lead</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <a href="{% url 'task_create' %}" class="quick-action-card">
+                                <div class="action-icon-box" style="background: #eef2ff; color: #4f46e5;">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <span class="action-title">Create Task</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <a href="{% url 'interaction_create' %}" class="quick-action-card">
+                                <div class="action-icon-box" style="background: #eff6ff; color: #2563eb;">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <span class="action-title">Log Call</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <a href="{% url 'sales_pipeline' %}" class="quick-action-card">
+                                <div class="action-icon-box" style="background: #fffbeb; color: #d97706;">
+                                    <i class="fas fa-funnel-dollar"></i>
+                                </div>
+                                <span class="action-title">Pipeline</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <a href="{% url 'analytics' %}" class="quick-action-card">
+                                <div class="action-icon-box" style="background: #f5f3ff; color: #7c3aed;">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <span class="action-title">Analytics</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <a href="{% url 'reports' %}" class="quick-action-card">
+                                <div class="action-icon-box" style="background: #fef2f2; color: #dc2626;">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <span class="action-title">Reports</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chartMonths = {{ chart_months_json|safe }};
+        const chartLeads = {{ chart_leads_json|safe }};
+        const chartConverted = {{ chart_converted_json|safe }};
+
+        const statusLabels = {{ status_labels_json|safe }};
+        const statusData = {{ status_data_json|safe }};
+
+    // 1. Lead Acquisition Line & Area Chart
+    const leadsTrendCtx = document.getElementById('leadsTrendChart').getContext('2d');
+
+    // Gradient fills
+    const leadGradient = leadsTrendCtx.createLinearGradient(0, 0, 0, 250);
+    leadGradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+    leadGradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+    const convertedGradient = leadsTrendCtx.createLinearGradient(0, 0, 0, 250);
+    convertedGradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+    convertedGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    new Chart(leadsTrendCtx, {
+        type: 'line',
+        data: {
+            labels: chartMonths,
+            datasets: [
+                {
+                    label: 'Total Leads Acquired',
+                    data: chartLeads,
+                    borderColor: '#3b82f6',
+                    backgroundColor: leadGradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3b82f6',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Converted Clients',
+                    data: chartConverted,
+                    borderColor: '#10b981',
+                    backgroundColor: convertedGradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#10b981',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: '#0f172a',
+                    titleFont: { family: 'Plus Jakarta Sans', size: 13 },
+                    bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: { family: 'Plus Jakarta Sans', size: 11 },
+                        color: '#64748b'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f1f5f9'
+                    },
+                    ticks: {
+                        font: { family: 'Plus Jakarta Sans', size: 11 },
+                        color: '#64748b',
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // 2. Pipeline Status Doughnut Chart
+    const pipelineCtx = document.getElementById('pipelineStatusChart').getContext('2d');
+    new Chart(pipelineCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusData,
+                backgroundColor: [
+                    '#3b82f6', // New - Blue
+                    '#06b6d4', // Contacted - Cyan
+                    '#f59e0b', // Qualified - Amber
+                    '#8b5cf6', // Proposal - Purple
+                    '#10b981', // Converted - Emerald
+                    '#ef4444'  // Lost - Red
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 12,
+                        font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' },
+                        color: '#334155'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleFont: { family: 'Plus Jakarta Sans', size: 12 },
+                    bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

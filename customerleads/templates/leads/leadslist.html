@@ -149,7 +149,7 @@
                                     {{ lead.get_priority_display|default:lead.priority|capfirst }}
                                 </span>
                             </td>
-                            <td>{{ lead.assigned_to.get_full_name|default:"Unassigned" }}</td>
+                            <td>{{ lead.created_by.get_full_name|default:"Unassigned" }}</td>
                             <td>{{ lead.created_at|date:"d M Y" }}</td>
                             <td>
                                 <div class="d-flex gap-2">

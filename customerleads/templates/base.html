@@ -1,186 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AURESAN INTERNATIONAL LIMITED - Admin CRM{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>{% block title %}AURESAN CRM - Executive Dashboard{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Chart.js 4.4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
+
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar">
-                <div class="d-flex flex-column flex-shrink-0 p-3">
-                    <h4 class="text-center mb-4 text-emerald fw-bold" style="color: #10b981; font-size: 1.15rem;">AURESAN CRM</h4>
+    <div class="container-fluid p-0">
+        <div class="d-flex">
+            <!-- Luxury Executive Sidebar -->
+            <aside class="sidebar">
+                <div>
+                    <a href="{% url 'admin_dashboard' %}" class="sidebar-brand">
+                        <div class="sidebar-brand-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="sidebar-brand-text">
+                            AURESAN <span>CRM</span>
+                            <span class="version-tag">Administrator Portal</span>
+                        </div>
+                    </a>
 
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <!-- Dashboard -->
-                        <li class="nav-item">
-                            <a href="{% url 'dashboard' %}" class="nav-link active">
-                                <i class="fas fa-chart-line me-2"></i>
-                                Dashboard
+                    <div class="sidebar-menu-wrapper">
+                        <div class="nav-item">
+                            <a href="{% url 'admin_dashboard' %}" class="nav-link active">
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-chart-pie"></i></div>
+                                    <span>Admin Dashboard</span>
+                                </div>
                             </a>
-                        </li>
+                        </div>
+                        <div class="nav-item">
+                            <a href="{% url 'staff_dashboard' %}" class="nav-link">
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-headset"></i></div>
+                                    <span>Operator Console</span>
+                                </div>
+                            </a>
+                        </div>
 
-                        <!-- Lead Management -->
-                        <li class="nav-item">
+                        <div class="nav-item">
                             <a href="{% url 'leads' %}" class="nav-link">
-                                <i class="fas fa-users me-2"></i>
-                                Lead Management
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-users"></i></div>
+                                    <span>Lead Management</span>
+                                </div>
                             </a>
-                        </li>
-
-                        <!-- Sales Pipeline -->
-                        <li class="nav-item">
+                        </div>
+                        <div class="nav-item">
                             <a href="{% url 'sales_pipeline' %}" class="nav-link">
-                                <i class="fas fa-funnel-dollar me-2"></i>
-                                Sales Pipeline
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-funnel-dollar"></i></div>
+                                    <span>Sales Pipeline</span>
+                                </div>
                             </a>
-                        </li>
-                       
+                        </div>
 
-                        <!-- Task Management -->
-                        <li class="nav-item">
+                        <div class="nav-item">
                             <a href="{% url 'tasks' %}" class="nav-link">
-                                <i class="fas fa-tasks me-2"></i>
-                                Tasks & Reminders
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-check-square"></i></div>
+                                    <span>Tasks & Reminders</span>
+                                </div>
                             </a>
-                        </li>
-
-                        <!-- Client Management -->
-                        <li class="nav-item">
-                            <a href="{% url 'clients' %}" class="nav-link">
-                                <i class="fas fa-user-tie me-2"></i>
-                                Client Management
-                            </a>
-                        </li>
-
-                        <!-- Deliveries -->
-                        <li class="nav-item">
+                        </div>
+                        <div class="nav-item">
                             <a href="{% url 'deliveries' %}" class="nav-link">
-                                <i class="fas fa-truck me-2"></i>
-                                Deliveries
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-shipping-fast"></i></div>
+                                    <span>Deliveries</span>
+                                </div>
                             </a>
-                        </li>
+                        </div>
+                        <div class="nav-item">
+                            <a href="{% url 'interactions' %}" class="nav-link">
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-comments"></i></div>
+                                    <span>Interactions</span>
+                                </div>
+                            </a>
+                        </div>
 
-                        <!-- Analytics & Reports -->
-                        <li class="nav-item">
+                        <div class="nav-item">
                             <a href="{% url 'analytics' %}" class="nav-link">
-                                <i class="fas fa-chart-bar me-2"></i>
-                                Analytics & Reports
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                                    <span>Analytics</span>
+                                </div>
                             </a>
-                        </li>
-
-                        <!-- Activity History -->
-                        <li class="nav-item">
+                        </div>
+                        <div class="nav-item">
+                            <a href="{% url 'reports' %}" class="nav-link">
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-file-invoice"></i></div>
+                                    <span>Reports</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="nav-item">
                             <a href="{% url 'activity_logs' %}" class="nav-link">
-                                <i class="fas fa-history me-2"></i>
-                                Activity History
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-history"></i></div>
+                                    <span>Account Activity</span>
+                                </div>
                             </a>
-                        </li>
-
-                        <!-- User Management -->
-                        <li class="nav-item">
+                        </div>
+                        <div class="nav-item">
                             <a href="{% url 'user_management' %}" class="nav-link">
-                                <i class="fas fa-user-cog me-2"></i>
-                                User Management
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-users-cog"></i></div>
+                                    <span>User Management</span>
+                                </div>
                             </a>
-                        </li>
-
-                        <!-- API Management -->
-                        <li class="nav-item">
+                        </div>
+                        <div class="nav-item">
                             <a href="{% url 'api_management' %}" class="nav-link">
-                                <i class="fas fa-code me-2"></i>
-                                API Management
+                                <div class="nav-link-content">
+                                    <div class="nav-link-icon"><i class="fas fa-code-branch"></i></div>
+                                    <span>API Integrations</span>
+                                </div>
                             </a>
-                        </li>                    
-                    </ul>
-
-                    <!-- User Profile Section -->
-                    <div class="dropdown mt-4 pt-4 border-top">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="{% static 'images/user-avatar.png' %}" alt="User" width="32" height="32" class="rounded-circle me-2">
-                            <strong>{{ user.get_full_name|default:user.username }}</strong>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                            <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
-                        </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
-                <!-- Top Navigation Bar -->
-                <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom mb-4">
-                    <div class="container-fluid">
-                        <div class="navbar-nav me-auto">
-                            <span class="navbar-text text-muted">
-                                Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>
-                            </span>
+                <!-- User Profile Sidebar Footer Card -->
+                <div class="sidebar-user-footer">
+                    <a href="{% url 'profile' %}" class="sidebar-user-card">
+                        <div class="avatar-wrapper">
+                            <img src="{% static 'images/user-avatar.png' %}" alt="User" width="36" height="36"
+                                class="rounded-circle border border-emerald border-opacity-50"
+                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ user.username }}&background=10b981&color=fff';">
+                            <span class="online-pulse-dot"></span>
                         </div>
-                        <div class="navbar-nav">
-                            <a href="{% url 'notifications' %}" class="nav-link position-relative">
-                                <i class="fas fa-bell"></i>
-                                {% if unread_notifications %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ unread_notifications }}
-                                </span>
-                                {% endif %}
-                            </a>
-                            <a href="{% url 'quick_add' %}" class="nav-link">
-                                <i class="fas fa-plus-circle"></i> Quick Add
-                            </a>
+                        <div class="overflow-hidden flex-grow-1">
+                            <div class="fw-bold text-truncate text-white" style="font-size: 0.85rem;">{{ user.get_full_name|default:user.username }}</div>
+                            <small class="text-emerald text-truncate d-block opacity-90 fw-semibold"
+                                style="font-size: 0.725rem;">Super Administrator</small>
+                        </div>
+                        <i class="fas fa-sliders-h text-muted opacity-75" style="font-size: 0.85rem;"></i>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Top Navigation Header Bar -->
+                <header class="top-navbar d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-light d-lg-none" id="sidebarToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="header-search d-none d-sm-block">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" placeholder="Search leads, clients, deals...">
                         </div>
                     </div>
-                </nav>
 
-                <!-- Page Content -->
-                {% block content %}
-                <!-- Content will be injected here -->
-                {% endblock %}
-            </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="{% url 'quick_add' %}"
+                            class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 d-flex align-items-center gap-2 fw-semibold"
+                            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">
+                            <i class="fas fa-plus"></i>
+                            <span class="d-none d-md-inline">Quick Add</span>
+                        </a>
+
+                        <a href="{% url 'notifications' %}" class="icon-button" title="Notifications">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_notifications %}
+                            <span class="pulse-badge"></span>
+                            {% endif %}
+                        </a>
+
+                        <div class="dropdown">
+                            <button class="btn btn-link p-0 text-decoration-none d-flex align-items-center gap-2"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'images/user-avatar.png' %}" alt="User" width="38" height="38"
+                                    class="rounded-circle border border-2 border-emerald shadow-sm"
+                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ user.username }}&background=10b981&color=fff';">
+                                <div class="text-start d-none d-md-block">
+                                    <div class="fw-bold text-dark lh-1" style="font-size: 0.85rem;">{{ user.get_full_name|default:user.username }}</div>
+                                    <small class="text-emerald fw-semibold" style="font-size: 0.725rem;">Admin
+                                        Access</small>
+                                </div>
+                                <i class="fas fa-chevron-down text-muted ms-1 d-none d-md-inline"
+                                    style="font-size: 0.7rem;"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3"
+                                style="min-width: 190px;">
+                                <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i
+                                            class="fas fa-user-circle me-2 text-primary"></i>My Profile</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'settings' %}"><i
+                                            class="fas fa-cog me-2 text-secondary"></i>System Settings</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}"><i
+                                            class="fas fa-sign-out-alt me-2"></i>Sign Out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dynamic Page Content -->
+                {% block content %}{% endblock %}
+            </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JavaScript -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Active link highlighting
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Active Link Syncing for Luxury Sidebar
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
-            
+
             navLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
+                const href = link.getAttribute('href');
+                if (href && (currentPath === href || (href !== '/' && currentPath.startsWith(href)))) {
                     link.classList.add('active');
                 } else {
                     link.classList.remove('active');
                 }
             });
-        });
 
-        // Auto-dismiss alerts
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.remove();
-                }, 5000);
-            });
+            // Mobile Sidebar Toggle
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function () {
+                    sidebar.classList.toggle('show');
+                });
+            }
         });
     </script>
-    
-    {% block extra_js %}
-    <!-- Page-specific JavaScript will be injected here -->
-    {% endblock %}
+
+    {% block extra_js %}{% endblock %}
 </body>
+
 </html>

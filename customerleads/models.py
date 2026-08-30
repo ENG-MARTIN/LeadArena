@@ -326,3 +326,45 @@ class Delivery(models.Model):
             'failed': 'danger',
             'returned': 'secondary',
         }.get(self.status, 'secondary')
+
+
+class Activity(models.Model):
+    ACTION_CHOICES = [
+        ('login', 'Login'),
+        ('logout', 'Logout'),
+        ('lead_created', 'Lead Created'),
+        ('lead_updated', 'Lead Updated'),
+        ('lead_deleted', 'Lead Deleted'),
+        ('lead_converted', 'Lead Converted'),
+        ('call_made', 'Call Made'),
+        ('delivery_created', 'Delivery Created'),
+        ('delivery_updated', 'Delivery Updated'),
+        ('delivery_assigned', 'Delivery Assigned'),
+        ('task_created', 'Task Created'),
+        ('task_completed', 'Task Completed'),
+        ('client_created', 'Client Created'),
+        ('settings_changed', 'Settings Changed'),
+        ('other', 'Other'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='activities')
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    description = models.TextField(blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    related_object_type = models.CharField(max_length=100, blank=True)
+    related_object_id = models.PositiveIntegerField(null=True, blank=True)
+    metadata = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Activity"
+        verbose_name_plural = "Activities"
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['action', '-created_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_action_display()} - {self.created_at}"
