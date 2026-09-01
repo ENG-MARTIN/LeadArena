@@ -301,9 +301,9 @@
         <table class="custom-dashboard-table">
             <thead>
                 <tr>
+                    <th>orderId</th>
                     <th>Name</th>
                     <th>Phone No.</th>
-                    <th>Company</th>
                     <th>Status</th>
                     <th>Priority</th>
                     <th>Added</th>
@@ -312,9 +312,9 @@
             <tbody>
                 {% for lead in leads %}
                 <tr>
+                    <td style="font-family: monospace; font-weight: 600; color: #1e293b;">{{ lead.order_id }}</td>
                     <td><strong>{{ lead.name }}</strong></td>
                     <td style="font-family: monospace; font-weight: 600; color: #1e293b;">{{ lead.phone }}</td>
-                    <td style="color: var(--text-muted);">{{ lead.company|default:"—" }}</td>
                     <td>
                         <!-- Dynamic Status Pill Badges -->
                         <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px;

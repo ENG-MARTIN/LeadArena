@@ -576,10 +576,11 @@
                         <table class="data-table-modern">
                             <thead>
                                 <tr>
-                                    <th>Lead Name</th>
-                                    <th>Company</th>
+                                    <th>Order ID</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
                                     <th>Status</th>
-                                    <th>Value</th>
+                                    <th>Price</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
@@ -587,20 +588,20 @@
                                 {% for lead in recent_leads %}
                                 <tr>
                                     <td>
+                                        <span class="fw-semibold text-dark" style="font-size: 0.85rem;">{{ lead.order_id }}</span>
+                                    </td>
+                                    <td>
                                         <div class="d-flex align-items-center gap-2.5">
                                             <div class="avatar-circle">
                                                 {{ lead.name|slice:":1"|upper }}
                                             </div>
                                             <div>
                                                 <div class="fw-bold text-dark lh-sm">{{ lead.name }}</div>
-                                                <small class="text-muted" style="font-size: 0.75rem;">{{
-                                                    lead.phone|default:lead.email }}</small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="fw-semibold text-secondary" style="font-size: 0.85rem;">{{
-                                            lead.company|default:"—" }}</span>
+                                        <span class="text-muted" style="font-size: 0.85rem;">{{ lead.phone|default:"—" }}</span>
                                     </td>
                                     <td>
                                         <span class="status-badge-dot {{ lead.status|default:'new' }}">
@@ -609,8 +610,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">UGX {{
-                                            lead.total|default:"0.00" }}</span>
+                                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">UGX {{ lead.total|default:0|floatformat:2 }}</span>
                                     </td>
                                     <td class="text-end">
                                         <a href="{% url 'lead_detail' lead.pk %}"
@@ -645,13 +645,15 @@
                     {% for source in leads_by_source %}
                     <div class="source-row">
                         <div style="min-width: 130px;">
-                            <div class="fw-semibold text-dark text-capitalize" style="font-size: 0.85rem;">{{
-                                source.source|default:"Direct / Website" }}</div>
-                            <small class="text-muted" style="font-size: 0.725rem;">{{ source.count }} leads ({{
-                                source.percentage }}%)</small>
+                            <div class="fw-semibold text-dark text-capitalize" style="font-size: 0.85rem;">
+                                {{ source.source|default:"Direct / Website" }}
+                            </div>
+                            <small class="text-muted" style="font-size: 0.725rem;">
+                                {{ source.count|default:0 }} leads ({{ source.percentage|default:0 }}%)
+                            </small>
                         </div>
                         <div class="source-bar-bg">
-                            <div class="source-bar-fill" style="width: {{ source.percentage }}%;"></div>
+                            <div class="source-bar-fill" style="width: {{ source.percentage|default:0 }}%;"></div>
                         </div>
                     </div>
                     {% empty %}
